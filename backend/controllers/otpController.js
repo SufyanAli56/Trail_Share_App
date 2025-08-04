@@ -10,46 +10,47 @@ const asyncHandler = require('express-async-handler');
 exports.verifyOTP = asyncHandler(async (req, res, next) => {
   const { email, otp } = req.body;
 
-  // Find user
+  // 1️⃣ Find user
   const user = await User.findOne({ email });
   if (!user) {
     return next(new ErrorResponse('Invalid credentials', 401));
   }
 
-  // Check if OTP matches and not expired
+  // 2️⃣ Check if OTP matches and not expired
   if (user.otp !== otp || user.otpExpire < new Date()) {
     return next(new ErrorResponse('Invalid or expired OTP', 400));
   }
 
-  // Update OTP log
+  // 3️⃣ Update OTP log as verified
   await OtpLog.findOneAndUpdate(
     { email, otp },
     { verified: true },
     { new: true }
   );
 
-  // Clear OTP from user
+  // 4️⃣ Clear OTP from user and mark verified
   user.otp = undefined;
   user.otpExpire = undefined;
   user.isVerified = true;
   await user.save();
 
-  // Generate token
+  // 5️⃣ Generate JWT
   const token = generateToken(user._id);
 
-  // Set cookie options
+  // 6️⃣ Set cookie options safely
+  const cookieExpireDays = Number(process.env.JWT_COOKIE_EXPIRE || 7); // default 7 days
   const options = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-    ),
     httpOnly: true,
+    expires: new Date(Date.now() + cookieExpireDays * 24 * 60 * 60 * 1000),
   };
 
   if (process.env.NODE_ENV === 'production') {
     options.secure = true;
   }
 
-  res.status(200)
+  // 7️⃣ Send response with token and cookie
+  res
+    .status(200)
     .cookie('token', token, options)
     .json({
       success: true,

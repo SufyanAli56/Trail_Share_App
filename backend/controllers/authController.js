@@ -4,6 +4,7 @@ const sendEmail = require('../config/mailer');
 const generateOTP = require('../utils/generateOTP');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('express-async-handler');
+const jwt = require('jsonwebtoken');
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -11,99 +12,81 @@ const asyncHandler = require('express-async-handler');
 exports.register = asyncHandler(async (req, res, next) => {
   const { name, email } = req.body;
 
-  // Check if user already exists
   const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    return next(new ErrorResponse('Email already registered', 400));
-  }
+  if (existingUser) return next(new ErrorResponse('Email already registered', 400));
 
-  // Create user
-  const user = await User.create({
-    name,
-    email,
-  });
+  // Create user without password first
+  const user = await User.create({ name, email });
 
   // Generate OTP
   const otp = generateOTP();
-
-  // Save OTP to user
   user.otp = otp;
-  user.otpExpire = new Date(Date.now() + process.env.OTP_EXPIRE_MINUTES * 60 * 1000);
+  user.otpExpire = Date.now() + (process.env.OTP_EXPIRE_MINUTES || 10) * 60 * 1000;
   await user.save();
 
   // Log OTP
-  await OtpLog.create({
-    email: user.email,
-    otp,
-  });
+  await OtpLog.create({ email: user.email, otp });
 
-  // Send OTP email
-  const message = `Your OTP for SufariTrails is ${otp}. It will expire in ${process.env.OTP_EXPIRE_MINUTES} minutes.`;
-
+  // Send OTP via email
+  const message = `Your OTP for SufariTrails is ${otp}. It expires in ${process.env.OTP_EXPIRE_MINUTES || 10} minutes.`;
   try {
     await sendEmail({
-      email: user.email,
+      to: user.email,
       subject: 'SufariTrails - OTP Verification',
-      message,
+      text: message,
     });
 
     res.status(201).json({
       success: true,
-      data: {
-        email: user.email,
-        message: 'OTP sent to email',
-      },
+      data: { email: user.email, message: 'OTP sent to email' },
     });
-  } catch (error) {
+  } catch (err) {
+    console.error('Email send error:', err);
     await User.deleteOne({ _id: user._id });
     return next(new ErrorResponse('Email could not be sent', 500));
   }
 });
 
-// @desc    Login user
+// @desc    Set Password after OTP verification
+// @route   POST /api/auth/set-password
+// @access  Public
+exports.setPassword = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user || !user.isVerified)
+    return next(new ErrorResponse('User not verified or does not exist', 400));
+
+  // ✅ Just assign the password; pre('save') will hash automatically
+  user.password = password;
+  await user.save();
+
+  res.status(200).json({ success: true, message: 'Password set successfully. You can now log in.' });
+});
+
+// @desc    Login user with email + password
 // @route   POST /api/auth/login
 // @access  Public
 exports.login = asyncHandler(async (req, res, next) => {
-  const { email } = req.body;
+  const { email, password } = req.body;
 
-  // Check if user exists
-  const user = await User.findOne({ email });
-  if (!user) {
-    return next(new ErrorResponse('Invalid credentials', 401));
-  }
+  const user = await User.findOne({ email }).select('+password');
+  if (!user || !user.isVerified)
+    return next(new ErrorResponse('Invalid credentials or user not verified', 401));
 
-  // Generate OTP
-  const otp = generateOTP();
+  if (!user.password)
+    return next(new ErrorResponse('Password not set. Please set your password first.', 400));
 
-  // Save OTP to user
-  user.otp = otp;
-  user.otpExpire = new Date(Date.now() + process.env.OTP_EXPIRE_MINUTES * 60 * 1000);
-  await user.save();
+  const isMatch = await user.matchPassword(password);
+  if (!isMatch) return next(new ErrorResponse('Invalid credentials', 401));
 
-  // Log OTP
-  await OtpLog.create({
-    email: user.email,
-    otp,
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE || '30d',
   });
 
-  // Send OTP email
-  const message = `Your OTP for SufariTrails is ${otp}. It will expire in ${process.env.OTP_EXPIRE_MINUTES} minutes.`;
-
-  try {
-    await sendEmail({
-      email: user.email,
-      subject: 'SufariTrails - OTP Verification',
-      message,
-    });
-
-    res.status(200).json({
-      success: true,
-      data: {
-        email: user.email,
-        message: 'OTP sent to email',
-      },
-    });
-  } catch (error) {
-    return next(new ErrorResponse('Email could not be sent', 500));
-  }
+  res.status(200).json({
+    success: true,
+    token,
+    user: { id: user._id, name: user.name, email: user.email },
+  });
 });
