@@ -8,7 +8,6 @@ const cloudinary = require('../config/cloudinary');
 // @access  Public
 exports.getTrips = asyncHandler(async (req, res, next) => {
   const trips = await Trip.find().populate('user', 'name email');
-
   res.status(200).json({
     success: true,
     count: trips.length,
@@ -21,13 +20,11 @@ exports.getTrips = asyncHandler(async (req, res, next) => {
 // @access  Public
 exports.getTrip = asyncHandler(async (req, res, next) => {
   const trip = await Trip.findById(req.params.id).populate('user', 'name email');
-
   if (!trip) {
     return next(
       new ErrorResponse(`Trip not found with id of ${req.params.id}`, 404)
     );
   }
-
   res.status(200).json({
     success: true,
     data: trip,
@@ -38,12 +35,13 @@ exports.getTrip = asyncHandler(async (req, res, next) => {
 // @route   POST /api/trips
 // @access  Private
 exports.createTrip = asyncHandler(async (req, res, next) => {
-  // Add user to req.body
+  // Attach logged-in user
   req.body.user = req.user.id;
 
-  // Handle image upload
   let images = [];
-  if (req.files) {
+
+  // If images are uploaded
+  if (req.files && req.files.length > 0) {
     for (let i = 0; i < req.files.length; i++) {
       const result = await cloudinary.uploader.upload(req.files[i].path, {
         folder: 'sufaritrails/trips',
@@ -53,6 +51,10 @@ exports.createTrip = asyncHandler(async (req, res, next) => {
         url: result.secure_url,
       });
     }
+  }
+  // If URLs are provided directly
+  else if (req.body.images && Array.isArray(req.body.images)) {
+    images = req.body.images;
   }
 
   req.body.images = images;
@@ -70,14 +72,13 @@ exports.createTrip = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.updateTrip = asyncHandler(async (req, res, next) => {
   let trip = await Trip.findById(req.params.id);
-
   if (!trip) {
     return next(
       new ErrorResponse(`Trip not found with id of ${req.params.id}`, 404)
     );
   }
 
-  // Make sure user is trip owner
+  // Make sure user owns the trip
   if (trip.user.toString() !== req.user.id) {
     return next(
       new ErrorResponse(
@@ -103,14 +104,13 @@ exports.updateTrip = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.deleteTrip = asyncHandler(async (req, res, next) => {
   const trip = await Trip.findById(req.params.id);
-
   if (!trip) {
     return next(
       new ErrorResponse(`Trip not found with id of ${req.params.id}`, 404)
     );
   }
 
-  // Make sure user is trip owner
+  // Make sure user owns the trip
   if (trip.user.toString() !== req.user.id) {
     return next(
       new ErrorResponse(
@@ -120,7 +120,7 @@ exports.deleteTrip = asyncHandler(async (req, res, next) => {
     );
   }
 
-  // Delete images from cloudinary
+  // Delete images from Cloudinary
   for (let i = 0; i < trip.images.length; i++) {
     await cloudinary.uploader.destroy(trip.images[i].public_id);
   }
