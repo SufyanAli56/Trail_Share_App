@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../../api/axios";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export default function SetPassword() {
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -11,14 +12,22 @@ export default function SetPassword() {
   const location = useLocation();
 
   // ✅ Get email from query params
-  const queryParams = new URLSearchParams(location.search);
-  const email = queryParams.get("email");
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const emailFromUrl = queryParams.get("email");
+
+    if (emailFromUrl) {
+      setEmail(emailFromUrl);
+    } else {
+      setError("Invalid password reset link. Email is missing.");
+    }
+  }, [location.search]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // ✅ prevent page reload
+    e.preventDefault();
 
-    if (!email) {
-      setError("Missing email. Please restart verification process.");
+    if (!email || !password) {
+      setError("Email and password are required.");
       return;
     }
 
@@ -26,13 +35,10 @@ export default function SetPassword() {
       setLoading(true);
       setError("");
 
-      const res = await api.post("/auth/set-password", {
-        email,
-        password,
-      });
+      const res = await api.post("/auth/set-password", { email, password });
 
       if (res.data.success) {
-        alert("Password set successfully! Please log in.");
+        alert("✅ Password set successfully! Please log in.");
         navigate("/login");
       } else {
         setError(res.data.error || "Failed to set password");
@@ -49,14 +55,23 @@ export default function SetPassword() {
     <div className="p-6 max-w-sm mx-auto">
       <h1 className="text-xl font-bold mb-4">Set Your Password</h1>
 
-      {/* ✅ Wrap input in a form to avoid the DOM warning */}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} autoComplete="new-password">
+        {/* ✅ Show email in read-only mode */}
+        <input
+          type="email"
+          className="border w-full p-2 mb-3 bg-gray-100"
+          value={email || ""}
+          readOnly
+        />
+
         <input
           type="password"
+          name="new-password"
           className="border w-full p-2 mb-3"
           placeholder="New Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          autoComplete="new-password"
           required
         />
 
