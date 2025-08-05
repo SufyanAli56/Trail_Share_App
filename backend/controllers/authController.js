@@ -6,9 +6,10 @@ const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 
-// @desc    Register user
-// @route   POST /api/auth/register
-// @access  Public
+/**
+ * @desc Register user & send OTP
+ * @route POST /api/auth/register
+ */
 exports.register = asyncHandler(async (req, res, next) => {
   const { name, email } = req.body;
 
@@ -28,7 +29,9 @@ exports.register = asyncHandler(async (req, res, next) => {
   await OtpLog.create({ email: user.email, otp });
 
   // Send OTP via email
-  const message = `Your OTP for SufariTrails is ${otp}. It expires in ${process.env.OTP_EXPIRE_MINUTES || 10} minutes.`;
+  const message = `Your OTP for SufariTrails is ${otp}. It expires in ${
+    process.env.OTP_EXPIRE_MINUTES || 10
+  } minutes.`;
   try {
     await sendEmail({
       to: user.email,
@@ -47,26 +50,60 @@ exports.register = asyncHandler(async (req, res, next) => {
   }
 });
 
-// @desc    Set Password after OTP verification
-// @route   POST /api/auth/set-password
-// @access  Public
+/**
+ * @desc Verify OTP
+ * @route POST /api/otp/verify
+ */
+exports.verifyOtp = asyncHandler(async (req, res, next) => {
+  const { email, otp } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) return next(new ErrorResponse('User not found', 404));
+
+  // Check OTP and expiry
+  if (!user.otp || user.otp !== otp) {
+    return next(new ErrorResponse('Invalid OTP', 400));
+  }
+  if (user.otpExpire < Date.now()) {
+    return next(new ErrorResponse('OTP expired', 400));
+  }
+
+  // Mark verified and clear OTP
+  user.isVerified = true;
+  user.otp = undefined;
+  user.otpExpire = undefined;
+  await user.save();
+
+  await OtpLog.updateMany({ email, otp }, { used: true });
+
+  res.status(200).json({ success: true, message: 'OTP verified successfully', email: user.email });
+});
+
+/**
+ * @desc Set Password after OTP verification
+ * @route POST /api/auth/set-password
+ */
 exports.setPassword = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
-  if (!user || !user.isVerified)
-    return next(new ErrorResponse('User not verified or does not exist', 400));
+  if (!user) return next(new ErrorResponse('User not found', 404));
 
-  // ✅ Just assign the password; pre('save') will hash automatically
+  if (!user.isVerified) {
+    return next(new ErrorResponse('User not verified. Please verify OTP first.', 400));
+  }
+
+  // Assign password (pre-save hook will hash)
   user.password = password;
   await user.save();
 
   res.status(200).json({ success: true, message: 'Password set successfully. You can now log in.' });
 });
 
-// @desc    Login user with email + password
-// @route   POST /api/auth/login
-// @access  Public
+/**
+ * @desc Login user with email + password
+ * @route POST /api/auth/login
+ */
 exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
