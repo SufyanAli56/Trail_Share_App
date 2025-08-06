@@ -4,6 +4,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { SparklesIcon, Plane, MapPin } from "lucide-react";
 import ImageCursorTrail from '../components/layout/ImageCursorTrail'
+import MapSection from "../components/layout/MapSection";
 export default function Home() {
   return (
   <>
@@ -55,6 +56,7 @@ export default function Home() {
      
     </div>
      <ImageCursorTrail/>
+     <MapSection/>
   </>
   );
 }
