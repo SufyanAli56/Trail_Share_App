@@ -2,24 +2,25 @@
 
 import React, { useState } from "react";
 import { SparklesIcon } from "lucide-react";
+import LoadingSpinner from "../common/LoadingSpinner";
 
-// Local Images
-import Img1 from '../../assets/Hunza.jpg';
-import Img2 from '../../assets/Abtabad.jpg'
-import Img3 from '../../assets/Deosai.jpg'
-import Img4 from '../../assets/Drawar.jpg'
-import Img5 from '../../assets/Gilgit.jpg'
-import Img6 from '../../assets/Naran.jpg'
-import Img7 from '../../assets/Noor.jpg'
-import Img8 from '../../assets/Kalftin-karachi.jpg'
-import Img9 from '../../assets/Badsahi.jpg'
+// ✅ Import images normally
+import Img1 from "../../assets/Hunza.jpg";
+import Img2 from "../../assets/Abtabad.jpg";
+import Img3 from "../../assets/Deosai.jpg";
+import Img4 from "../../assets/Drawar.jpg";
+import Img5 from "../../assets/Gilgit.jpg";
+import Img6 from "../../assets/Naran.jpg";
+import Img7 from "../../assets/Noor.jpg";
+import Img8 from "../../assets/Kalftin-karachi.jpg";
+import Img9 from "../../assets/Badsahi.jpg";
 
 export default function Home() {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
 
-  // Pakistani tourist places (all local images)
+  // Pakistani tourist places
   const places = [
     { title: "Hunza Valley", img: Img1 },
     { title: "Attabad Lake", img: Img2 },
@@ -27,7 +28,7 @@ export default function Home() {
     { title: "Derawar Fort (Cholistan Desert)", img: Img4 },
     { title: "Narran & Kagan", img: Img5 },
     { title: "Pir Ghaib Waterfalls (Bolan)", img: Img6 },
-    { title: "Noor Mahal ", img: Img7 },
+    { title: "Noor Mahal", img: Img7 },
     { title: "Clifton Beach (Karachi)", img: Img8 },
     { title: "Badshahi Mosque", img: Img9 },
   ];
@@ -74,8 +75,11 @@ export default function Home() {
                 alt={place.title}
                 className="w-full h-48 object-cover transition-transform duration-500"
                 style={{
-                  transform: hoveredIndex === index ? "scale(1.1)" : "scale(1)",
+                  transform:
+                    hoveredIndex === index ? "scale(1.1)" : "scale(1)",
                 }}
+                loading="lazy"
+                decoding="async"
               />
               {hoveredIndex === index && (
                 <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
@@ -96,11 +100,16 @@ export default function Home() {
           onClick={() => setIsModalOpen(false)}
         >
           <div className="relative max-w-4xl w-full bg-white rounded-lg overflow-hidden shadow-2xl">
-            <img
-              src={selectedImage}
-              alt="Expanded view"
-              className="w-full max-h-[80vh] object-contain"
-            />
+            {selectedImage ? (
+              <img
+                src={selectedImage}
+                alt="Expanded view"
+                className="w-full max-h-[80vh] object-contain"
+                loading="eager"
+              />
+            ) : (
+              <LoadingSpinner />
+            )}
             <button
               className="absolute top-4 right-4 bg-white/90 rounded-full p-2 shadow-lg hover:bg-white transition-colors"
               onClick={(e) => {
