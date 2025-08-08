@@ -7,7 +7,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   
-  // Modern travel-themed color palette
+  // Modern travel-themed color palett
   const colors = {
     primary: '#4C6FFF',    // Vibrant royal blue
     secondary: '#F8FAFC',  // Almost white
@@ -36,7 +36,7 @@ const Navbar = () => {
   return (
     <>
       <nav 
-        className="w-full fixed top-0 z-50 transition-all duration-300"
+        className="w-full  top-0 z-50 transition-all duration-300"
         style={{
           background: 'rgba(255, 255, 255, 0.92)',
           backdropFilter: 'blur(10px)',
@@ -54,7 +54,7 @@ const Navbar = () => {
       </Link>
     </div>
 
-            {/* Desktop Navigation */}
+            {/* Desktop Navigation */} 
             <div className="hidden md:flex items-center space-x-1">
               {navLinks.map((link) => (
                 <Link
