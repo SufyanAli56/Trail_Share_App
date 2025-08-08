@@ -23,30 +23,48 @@ export default function Register() {
   };
 
   return (
-    <div className="p-6 max-w-sm mx-auto">
-      <h1 className="text-xl font-bold mb-4">Register</h1>
-      {error && <p className="text-red-500 mb-2">{error}</p>}
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-md bg-white shadow-lg rounded-xl p-8 border border-gray-200">
+        <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">Create your account</h1>
 
-      <input
-        className="border w-full p-2 mb-3"
-        placeholder="Full Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <input
-        className="border w-full p-2 mb-3"
-        placeholder="Email Address"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+        {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
 
-      <button
-        onClick={handleRegister}
-        disabled={loading}
-        className="bg-blue-600 text-white px-4 py-2 rounded w-full disabled:opacity-50"
-      >
-        {loading ? "Registering..." : "Register"}
-      </button>
+        <div className="space-y-4">
+          <input
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            placeholder="Full Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <input
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            placeholder="Email Address"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+
+        <button
+  onClick={handleRegister}
+  disabled={loading}
+  className="mt-6 w-full py-3 text-white font-medium rounded-lg transition-all duration-300 relative overflow-hidden disabled:opacity-60"
+  style={{
+    background: 'linear-gradient(90deg, #ff4d4d 0%, #b30000 100%)',
+    boxShadow: '0 4px 15px rgba(255, 77, 77, 0.4)',
+  }}
+>
+  {loading ? "Registering..." : "Register"}
+</button>
+
+
+        <p className="mt-4 text-sm text-center text-gray-600">
+          Already have an account?{" "}
+          <a href="/login" className="text-blue-600 hover:underline font-medium">
+            Login
+          </a>
+        </p>
+      </div>
     </div>
   );
 }
