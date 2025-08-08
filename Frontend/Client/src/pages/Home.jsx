@@ -6,6 +6,7 @@ import { Sparkles, Mountain, MapPin } from "lucide-react";
 import ImageCursor from '../components/layout/ImageCursorTrail';
 import MapSection from "../components/layout/MapSection";
 import Img from '../assets/Noor.jpg';
+import Faq from "../components/common/Faq";
 
 // Try to import Hiking normally or use Mountain as fallback
 let HikingIcon = Mountain;
@@ -119,6 +120,7 @@ export default function Home() {
         {/* Cursor and map components */}
         <ImageCursor />
         <MapSection />
+        <Faq/>
       </div>
     </div>
   );
