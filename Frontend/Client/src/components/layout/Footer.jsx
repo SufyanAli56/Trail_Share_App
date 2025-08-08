@@ -180,7 +180,7 @@ const Footer = () => {
       </div>
       
       {/* Decorative Elements */}
-      <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400"></div>
+   
     </footer>
   );
 };
