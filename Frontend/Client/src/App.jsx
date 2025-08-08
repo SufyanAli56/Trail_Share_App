@@ -4,6 +4,7 @@ import Navbar from "./components/layout/Navbar";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
 import LoadingSpinner from "./components/common/LoadingSpinner";
 import ScrollToTop from "./components/common/ScrollToTop";
+import Footer from "./components/layout/Footer";
 
 // Preload critical components
 const Home = lazy(() => import(/* webpackPrefetch: true */ "./pages/Home"));
@@ -50,6 +51,7 @@ function App() {
           />
         </Routes>
       </Suspense>
+      <Footer/>
     </BrowserRouter>
   );
 }
