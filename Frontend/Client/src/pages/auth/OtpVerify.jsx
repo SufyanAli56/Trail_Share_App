@@ -20,7 +20,6 @@ export default function OtpVerify() {
       const res = await api.post("/otp/verify", { email, otp });
       if (res.data.success) {
         alert("OTP Verified!");
-        // Redirect to set password with email in URL
         navigate(`/set-password?email=${encodeURIComponent(email)}`);
       }
     } catch (err) {
@@ -32,11 +31,11 @@ export default function OtpVerify() {
 
   return (
     <div className="p-6 max-w-sm mx-auto">
-      <h1 className="text-xl font-bold mb-4">Verify OTP</h1>
+      <h1 className="text-xl font-bold mb-4 text-gray-800">Verify OTP</h1>
       {error && <p className="text-red-500 mb-2">{error}</p>}
 
       <input
-        className="border w-full p-2 mb-3"
+        className="border border-gray-300 rounded-lg w-full p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-red-400"
         placeholder="Enter OTP"
         value={otp}
         onChange={(e) => setOtp(e.target.value)}
@@ -45,7 +44,11 @@ export default function OtpVerify() {
       <button
         onClick={handleVerify}
         disabled={loading}
-        className="bg-green-600 text-white px-4 py-2 rounded w-full disabled:opacity-50"
+        className="w-full py-3 text-white font-medium rounded-lg transition-all duration-300 relative overflow-hidden disabled:opacity-60"
+        style={{
+          background: 'linear-gradient(90deg, #ff4d4d 0%, #b30000 100%)',
+          boxShadow: '0 4px 15px rgba(255, 77, 77, 0.4)',
+        }}
       >
         {loading ? "Verifying..." : "Verify OTP"}
       </button>
