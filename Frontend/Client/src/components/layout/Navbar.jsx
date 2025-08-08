@@ -1,11 +1,11 @@
-import { Link } from "react-router-dom";
-import { useAuthStore } from "../../store/useAuthStore";
-import { Helmet } from "react-helmet-async";
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
-  const { token, logout } = useAuthStore();
-
-  // Refined color palette
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+  
+  // Modern travel-themed color palette
   const colors = {
     primary: '#4C6FFF',    // Vibrant royal blue
     secondary: '#F8FAFC',  // Almost white
@@ -16,121 +16,140 @@ const Navbar = () => {
     success: '#48BB78'     // Mint green
   };
 
-  const linkClass =
-    "relative px-3 py-2 rounded-md text-base font-semibold transition-all duration-200 hover:scale-105";
+  // Navigation links
+  const navLinks = [
+    { name: 'Home', path: '/' },
+    { name: 'Destinations', path: '/destinations' },
+    { name: 'Packages', path: '/packages' },
+    { name: 'Experiences', path: '/experiences' },
+    { name: 'Contact', path: '/contact' },
+    { name: 'About', path: '/about' },
+  ];
 
-  const linkHoverEffect = {
-    position: "relative",
-    color: colors.dark,
-    textDecoration: "none",
+  // Check if link is active
+  const isActive = (path) => {
+    return location.pathname === path;
   };
 
   return (
     <>
-      <Helmet>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </Helmet>
-      <nav
-        className="flex justify-between items-center p-6 shadow-sm"
+      <nav 
+        className="w-full fixed top-0 z-50 transition-all duration-300"
         style={{
-          backgroundColor: colors.secondary,
-          borderBottomLeftRadius: "20px",
-          borderBottomRightRadius: "20px",
-          fontFamily: "'Nunito', sans-serif",
-          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+          background: 'rgba(255, 255, 255, 0.92)',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+          borderBottom: '1px solid rgba(226, 232, 240, 0.5)'
         }}
       >
-        {/* Left side - Logo/Brand */}
-        <div className="flex items-center space-x-2">
-          <svg
-            width="36"
-            height="36"
-            viewBox="0 0 32 32"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle cx="16" cy="16" r="16" fill={colors.primary} />
-            <path
-              d="M16 8L20 14H12L16 8ZM16 24L12 18H20L16 24Z"
-              fill="white"
-            />
-            <circle cx="16" cy="16" r="4" fill={colors.accent} />
-          </svg>
-          <Link
-            to="/"
-            className="text-3xl font-bold tracking-wide"
-            style={{ color: colors.dark }}
-          >
-            TravelSite
-          </Link>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            {/* Logo */}
+            <div className="flex items-center">
+              <Link to="/" className="flex items-center">
+                <div className="relative">
+                  <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-600 opacity-75 blur"></div>
+                  <div 
+                    className="relative px-4 py-2 rounded-lg text-white font-bold text-xl tracking-wide"
+                    style={{ background: 'linear-gradient(135deg, #4C6FFF 0%, #3B5BDB 100%)' }}
+                  >
+                    WanderLuxe
+                  </div>
+                </div>
+              </Link>
+            </div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.path}
+                  className={`relative px-4 py-2 font-medium text-lg rounded-lg transition-all duration-300 ${
+                    isActive(link.path) 
+                      ? 'text-blue-600 font-semibold' 
+                      : 'text-gray-600 hover:text-blue-500'
+                  }`}
+                >
+                  {link.name}
+                  {isActive(link.path) && (
+                    <span 
+                      className="absolute bottom-1 left-1/2 transform -translate-x-1/2 h-0.5 w-6 rounded-full"
+                      style={{ background: 'linear-gradient(90deg, #FFB74D 0%, #FF9800 100%)' }}
+                    ></span>
+                  )}
+                </Link>
+              ))}
+            </div>
+
+            {/* Auth Buttons */}
+            <div className="flex items-center space-x-3">
+              <Link 
+                to="/login"
+                className="hidden md:block relative px-5 py-2.5 rounded-lg font-medium text-white transition-all duration-300 overflow-hidden"
+                style={{
+                  background: 'linear-gradient(90deg, #FFB74D 0%, #FF9800 100%)',
+                  boxShadow: '0 4px 15px rgba(255, 183, 77, 0.4)'
+                }}
+              >
+                <span className="relative z-10">Login</span>
+                <span className="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
+              </Link>
+              
+              {/* Mobile menu button */}
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg"
+                style={{ background: 'linear-gradient(135deg, #4C6FFF 0%, #3B5BDB 100%)' }}
+              >
+                <span 
+                  className={`block w-6 h-0.5 bg-white rounded mb-1 transition-transform duration-300 ${isMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}
+                ></span>
+                <span 
+                  className={`block w-6 h-0.5 bg-white rounded mb-1 transition-opacity duration-300 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}
+                ></span>
+                <span 
+                  className={`block w-6 h-0.5 bg-white rounded transition-transform duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`}
+                ></span>
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Center - Navigation Links */}
-        <div className="hidden md:flex space-x-10">
-          <Link
-            to="/trips"
-            className={linkClass}
-            style={linkHoverEffect}
-          >
-            Trips
-            <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-current transition-all duration-300 hover:w-full"></span>
-          </Link>
-          {token && (
-            <Link
-              to="/bookmarks"
-              className={linkClass}
-              style={linkHoverEffect}
-            >
-              Bookmarks
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-current transition-all duration-300 hover:w-full"></span>
-            </Link>
-          )}
-          <Link
-            to="/about"
-            className={linkClass}
-            style={linkHoverEffect}
-          >
-            About
-            <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-current transition-all duration-300 hover:w-full"></span>
-          </Link>
-          <Link
-            to="/contact"
-            className={linkClass}
-            style={linkHoverEffect}
-          >
-            Contact
-            <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-current transition-all duration-300 hover:w-full"></span>
-          </Link>
-        </div>
-
-        {/* Right side - Auth Actions */}
-        <div className="flex items-center space-x-4">
-          {!token ? (
-            <Link
+        {/* Mobile Menu */}
+        <div 
+          className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${
+            isMenuOpen ? 'max-h-96 opacity-100 py-4' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="px-4 pt-2 pb-6 space-y-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                to={link.path}
+                className={`block px-4 py-3 rounded-xl text-lg font-medium transition-colors duration-300 ${
+                  isActive(link.path) 
+                    ? 'text-blue-600 bg-blue-50 font-semibold' 
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {link.name}
+              </Link>
+            ))}
+            
+            <Link 
               to="/login"
-              className="px-5 py-2 rounded-lg font-semibold transition-all duration-200 hover:shadow-lg hover:scale-105"
+              className="block mt-4 px-4 py-3 rounded-xl text-center text-white font-medium text-lg"
               style={{
-                backgroundColor: colors.primary,
-                color: "white",
+                background: 'linear-gradient(90deg, #FFB74D 0%, #FF9800 100%)',
+                boxShadow: '0 4px 15px rgba(255, 183, 77, 0.4)'
               }}
+              onClick={() => setIsMenuOpen(false)}
             >
               Login
             </Link>
-          ) : (
-            <button
-              onClick={logout}
-              className="px-5 py-2 rounded-lg font-semibold transition-all duration-200 hover:shadow-lg hover:scale-105"
-              style={{
-                backgroundColor: colors.error,
-                color: "white",
-              }}
-            >
-              Logout
-            </button>
-          )}
+          </div>
         </div>
       </nav>
     </>
