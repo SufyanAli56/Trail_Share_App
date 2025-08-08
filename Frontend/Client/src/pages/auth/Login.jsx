@@ -22,12 +22,10 @@ export default function Login() {
         email: email.trim(),
         password,
       };
-      console.log("🔹 Sending login:", payload);
 
       const res = await api.post("/auth/login", payload);
 
       if (res.data.success) {
-        // ✅ Save token & user in Zustand
         login({
           token: res.data.token,
           user: res.data.user,
@@ -38,46 +36,61 @@ export default function Login() {
         setError(res.data.message || res.data.error || "Login failed");
       }
     } catch (err) {
-      console.error(err.response?.data || err.message);
-      setError(err.response?.data?.message || err.response?.data?.error || "Login failed");
+      setError(
+        err.response?.data?.message ||
+          err.response?.data?.error ||
+          "Login failed"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="p-6 max-w-sm mx-auto">
-      <h1 className="text-xl font-bold mb-4">Login</h1>
-      {error && <p className="text-red-500 mb-2">{error}</p>}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f8f5f2] via-[#f2e8e5] to-[#f8f5f2] px-4">
+      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          Welcome Back
+        </h2>
 
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          className="border w-full p-2 mb-3"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="username"
-          required
-        />
-        <input
-          type="password"
-          className="border w-full p-2 mb-3"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="current-password"
-          required
-        />
+        {error && (
+          <p className="text-red-600 text-sm text-center mb-4">{error}</p>
+        )}
 
-        <button
-          type="submit"
-          disabled={loading || !email || !password}
-          className="bg-blue-600 text-white px-4 py-2 rounded w-full disabled:opacity-50"
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </form>
+        <form onSubmit={handleLogin} className="space-y-4">
+          <input
+            type="email"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="username"
+            required
+          />
+
+          <input
+            type="password"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+            required
+          />
+
+          <button
+            type="submit"
+            disabled={loading || !email || !password}
+            className="w-full py-3 text-white font-semibold rounded-lg transition-all duration-300 disabled:opacity-50"
+            style={{
+              background: "linear-gradient(to right, #ff4d4d, #b30000)",
+              boxShadow: "0 4px 15px rgba(255, 77, 77, 0.4)",
+            }}
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
