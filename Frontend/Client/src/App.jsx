@@ -35,11 +35,7 @@ function App() {
           <Route path="/trips" element={<Trips />} />
 
           {/* Auth */}
-          <Route path="/register" element={<Register />} />
-          <Route path="/otp-verify" element={<OtpVerify />} />
-          <Route path="/set-password" element={<SetPassword />} />
-          <Route path="/login" element={<Login />} />
-
+        
           {/* Protected */}
           <Route
             path="/bookmarks"
@@ -49,6 +45,11 @@ function App() {
               </ProtectedRoute>
             }
           />
+            <Route path="/register" element={<Register />} />
+          <Route path="/otp-verify" element={<OtpVerify />} />
+          <Route path="/set-password" element={<SetPassword />} />
+          <Route path="/login" element={<Login />} />
+
         </Routes>
       </Suspense>
       <Footer/>

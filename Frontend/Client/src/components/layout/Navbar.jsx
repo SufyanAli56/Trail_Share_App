@@ -1,24 +1,21 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Mountain } from 'lucide-react'; 
+import { Mountain } from 'lucide-react';
 
-// or use any other icon library
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-  
-  // Modern travel-themed color palett
+
   const colors = {
-    primary: '#4C6FFF',    // Vibrant royal blue
-    secondary: '#F8FAFC',  // Almost white
-    accent: '#FFB74D',     // Modern warm orange
-    dark: '#1A202C',       // Deep charcoal
-    light: '#E2E8F0',      // Soft gray
-    error: '#F56565',      // Coral red
-    success: '#48BB78'     // Mint green
+    primary: '#4C6FFF',
+    secondary: '#F8FAFC',
+    accent: '#FFB74D',
+    dark: '#1A202C',
+    light: '#E2E8F0',
+    error: '#F56565',
+    success: '#48BB78'
   };
 
-  // Navigation links
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Destinations', path: '/destinations' },
@@ -28,15 +25,12 @@ const Navbar = () => {
     { name: 'About', path: '/about' },
   ];
 
-  // Check if link is active
-  const isActive = (path) => {
-    return location.pathname === path;
-  };
+  const isActive = (path) => location.pathname === path;
 
   return (
     <>
-      <nav 
-        className="w-full  top-0 z-50 transition-all duration-300"
+      <nav
+        className="w-full top-0 z-50 transition-all duration-300"
         style={{
           background: 'rgba(255, 255, 255, 0.92)',
           backdropFilter: 'blur(10px)',
@@ -48,27 +42,27 @@ const Navbar = () => {
           <div className="flex justify-between items-center h-20">
             {/* Logo */}
             <div className="flex items-center">
-      <Link to="/" className="flex items-center space-x-2 text-red-600 font-extrabold text-2xl tracking-wide cursor-pointer">
-        <Mountain size={24} className="text-red-600" />
-        <span>TrailShare</span>
-      </Link>
-    </div>
+              <Link to="/" className="flex items-center space-x-2 text-red-600 font-extrabold text-2xl tracking-wide cursor-pointer">
+                <Mountain size={24} className="text-red-600" />
+                <span>TrailShare</span>
+              </Link>
+            </div>
 
-            {/* Desktop Navigation */} 
+            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   to={link.path}
                   className={`relative px-4 py-2 font-medium text-lg rounded-lg transition-all duration-300 ${
-                    isActive(link.path) 
-                      ? 'text-blue-600 font-semibold' 
+                    isActive(link.path)
+                      ? 'text-blue-600 font-semibold'
                       : 'text-gray-600 hover:text-blue-500'
                   }`}
                 >
                   {link.name}
                   {isActive(link.path) && (
-                    <span 
+                    <span
                       className="absolute bottom-1 left-1/2 transform -translate-x-1/2 h-0.5 w-6 rounded-full"
                       style={{ background: 'linear-gradient(90deg, #FFB74D 0%, #FF9800 100%)' }}
                     ></span>
@@ -79,32 +73,45 @@ const Navbar = () => {
 
             {/* Auth Buttons */}
             <div className="flex items-center space-x-3">
-              <Link 
+              {/* Login */}
+              <Link
                 to="/login"
                 className="hidden md:block relative px-5 py-2.5 rounded-lg font-medium text-white transition-all duration-300 overflow-hidden"
                 style={{
                   background: 'linear-gradient(to left, #ff4d4d, #b30000)',
                   boxShadow: '0 4px 15px rgba(255, 77, 77, 0.4)'
                 }}
-                
               >
                 <span className="relative z-10">Login</span>
                 <span className="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
               </Link>
-              
+
+              {/* Register */}
+              <Link
+                to="/register"
+                className="hidden md:block relative px-5 py-2.5 rounded-lg font-medium text-white transition-all duration-300 overflow-hidden"
+                style={{
+                  background: 'linear-gradient(to left, #ff4d4d, #b30000)',
+                  boxShadow: '0 4px 15px rgba(255, 77, 77, 0.4)'
+                }}
+              >
+                <span className="relative z-10">Register</span>
+                <span className="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
+              </Link>
+
               {/* Mobile menu button */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg"
                 style={{ background: 'linear-gradient(135deg, #4C6FFF 0%, #3B5BDB 100%)' }}
               >
-                <span 
+                <span
                   className={`block w-6 h-0.5 bg-white rounded mb-1 transition-transform duration-300 ${isMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}
                 ></span>
-                <span 
+                <span
                   className={`block w-6 h-0.5 bg-white rounded mb-1 transition-opacity duration-300 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}
                 ></span>
-                <span 
+                <span
                   className={`block w-6 h-0.5 bg-white rounded transition-transform duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`}
                 ></span>
               </button>
@@ -113,7 +120,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu */}
-        <div 
+        <div
           className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${
             isMenuOpen ? 'max-h-96 opacity-100 py-4' : 'max-h-0 opacity-0'
           }`}
@@ -124,8 +131,8 @@ const Navbar = () => {
                 key={link.name}
                 to={link.path}
                 className={`block px-4 py-3 rounded-xl text-lg font-medium transition-colors duration-300 ${
-                  isActive(link.path) 
-                    ? 'text-blue-600 bg-blue-50 font-semibold' 
+                  isActive(link.path)
+                    ? 'text-blue-600 bg-blue-50 font-semibold'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
@@ -133,8 +140,9 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
-            
-            <Link 
+
+            {/* Login Mobile */}
+            <Link
               to="/login"
               className="block mt-4 px-4 py-3 rounded-xl text-center text-white font-medium text-lg"
               style={{
@@ -144,6 +152,19 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Login
+            </Link>
+
+            {/* Register Mobile */}
+            <Link
+              to="/register"
+              className="block mt-3 px-4 py-3 rounded-xl text-center text-white font-medium text-lg"
+              style={{
+                background: 'linear-gradient(90deg, #FFB74D 0%, #FF9800 100%)',
+                boxShadow: '0 4px 15px rgba(255, 183, 77, 0.4)'
+              }}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Register
             </Link>
           </div>
         </div>
