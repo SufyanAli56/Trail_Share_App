@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { Mountain } from 'lucide-react'; 
 
+// or use any other icon library
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
@@ -46,18 +48,11 @@ const Navbar = () => {
           <div className="flex justify-between items-center h-20">
             {/* Logo */}
             <div className="flex items-center">
-              <Link to="/" className="flex items-center">
-                <div className="relative">
-                  <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-600 opacity-75 blur"></div>
-                  <div 
-                    className="relative px-4 py-2 rounded-lg text-white font-bold text-xl tracking-wide"
-                    style={{ background: 'linear-gradient(135deg, #4C6FFF 0%, #3B5BDB 100%)' }}
-                  >
-                    WanderLuxe
-                  </div>
-                </div>
-              </Link>
-            </div>
+      <Link to="/" className="flex items-center space-x-2 text-red-600 font-extrabold text-2xl tracking-wide cursor-pointer">
+        <Mountain size={24} className="text-red-600" />
+        <span>TrailShare</span>
+      </Link>
+    </div>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-1">
@@ -88,9 +83,10 @@ const Navbar = () => {
                 to="/login"
                 className="hidden md:block relative px-5 py-2.5 rounded-lg font-medium text-white transition-all duration-300 overflow-hidden"
                 style={{
-                  background: 'linear-gradient(90deg, #FFB74D 0%, #FF9800 100%)',
-                  boxShadow: '0 4px 15px rgba(255, 183, 77, 0.4)'
+                  background: 'linear-gradient(to left, #ff4d4d, #b30000)',
+                  boxShadow: '0 4px 15px rgba(255, 77, 77, 0.4)'
                 }}
+                
               >
                 <span className="relative z-10">Login</span>
                 <span className="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
