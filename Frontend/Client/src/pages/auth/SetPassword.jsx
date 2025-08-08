@@ -11,7 +11,6 @@ export default function SetPassword() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ Get email from query params
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const emailFromUrl = queryParams.get("email");
@@ -44,7 +43,6 @@ export default function SetPassword() {
         setError(res.data.error || "Failed to set password");
       }
     } catch (err) {
-      console.error(err.response?.data || err.message);
       setError(err.response?.data?.error || "Failed to set password");
     } finally {
       setLoading(false);
@@ -52,39 +50,45 @@ export default function SetPassword() {
   };
 
   return (
-    <div className="p-6 max-w-sm mx-auto">
-      <h1 className="text-xl font-bold mb-4">Set Your Password</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f8f5f2] via-[#f2e8e5] to-[#f8f5f2] px-4">
+      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          Set Your Password
+        </h2>
 
-      <form onSubmit={handleSubmit} autoComplete="new-password">
-        {/* ✅ Show email in read-only mode */}
-        <input
-          type="email"
-          className="border w-full p-2 mb-3 bg-gray-100"
-          value={email || ""}
-          readOnly
-        />
+        {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
 
-        <input
-          type="password"
-          name="new-password"
-          className="border w-full p-2 mb-3"
-          placeholder="New Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="new-password"
-          required
-        />
+        <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+          <input
+            type="email"
+            className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-700"
+            value={email}
+            readOnly
+          />
 
-        {error && <p className="text-red-500 mb-2">{error}</p>}
+          <input
+            type="password"
+            name="new-password"
+            placeholder="New Password"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
-        <button
-          type="submit"
-          disabled={loading || !password}
-          className="bg-purple-600 text-white px-4 py-2 rounded w-full disabled:opacity-50"
-        >
-          {loading ? "Saving..." : "Save Password"}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={loading || !password}
+            className="w-full py-3 text-white font-semibold rounded-lg transition-all duration-300 disabled:opacity-50"
+            style={{
+              background: "linear-gradient(to right, #ff4d4d, #b30000)",
+              boxShadow: "0 4px 15px rgba(255, 77, 77, 0.4)",
+            }}
+          >
+            {loading ? "Saving..." : "Save Password"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
