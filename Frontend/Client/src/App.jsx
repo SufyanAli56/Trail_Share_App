@@ -6,6 +6,7 @@ import LoadingSpinner from "./components/common/LoadingSpinner";
 import ScrollToTop from "./components/common/ScrollToTop";
 import Footer from "./components/layout/Footer";
 import Destinations from "./pages/Destinations";
+import Experiences from "./pages/Experiences";
 
 // Preload critical components
 const Home = lazy(() => import(/* webpackPrefetch: true */ "./pages/Home"));
@@ -33,6 +34,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/destinations" element={<Destinations />} />
           <Route path="/about" element={<About />} />
+          <Route path="/experiences" element={<Experiences />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/trips" element={<Trips />} />
 
