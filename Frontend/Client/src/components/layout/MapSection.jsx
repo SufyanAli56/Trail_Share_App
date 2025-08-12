@@ -77,7 +77,7 @@ export default function MapSection() {
   return (
     <section
       className="relative overflow-hidden rounded-2xl shadow-xl border border-gray-100 mt-12"
-      style={{ height: "80vh", backgroundColor: "#f0f0f0" }}
+      style={{ height: "100vh", backgroundColor: "#1111" }}
       aria-label="Interactive map of Pakistan"
     >
       <div className="absolute top-20 right-10 w-24 h-24 rounded-full bg-red-500/10 blur-3xl z-[1000]"></div>
