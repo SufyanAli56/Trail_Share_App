@@ -81,7 +81,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading || !email || !password}
-            className="w-full py-3 text-white font-semibold rounded-lg transition-all duration-300 disabled:opacity-50"
+            className="w-full py-3 text-white font-semibold rounded-lg transition-all duration-300 disabled:opacity-100"
             style={{
               background: "linear-gradient(to right, #ff4d4d, #b30000)",
               boxShadow: "0 4px 15px rgba(255, 77, 77, 0.4)",
